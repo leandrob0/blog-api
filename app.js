@@ -24,7 +24,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 
 // ROUTE.
-app.use("/api", authRoute);
+const apiRouter = require("./routes/apiRouter");
+
+app.use("/api", apiRouter);
 
 // ERROR HANDLING MIDDLEWARES.
 const { unknownEndpoint, errorHandler } = require("./middleware/errorHandle");
