@@ -23,6 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 
+// Passport initialization;
+const passport = require("./config/passport");
+app.use(passport.initialize());
+
 // ROUTE.
 const apiRouter = require("./routes/apiRouter");
 

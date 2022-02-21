@@ -1,7 +1,8 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 exports.register = [
   // Validate and sanitize data.
@@ -12,7 +13,7 @@ exports.register = [
     // Gets the hashed password and searchs if the inserted username exists already
     const pw = await bcrypt.hash(req.body.password, 10);
     const foundUname = await User.findOne({ username: req.body.username });
-    
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty() || foundUname) {
@@ -37,9 +38,35 @@ exports.register = [
   },
 ];
 
+exports.login = async function (req, res, next) {
+  try {
+    passport.authenticate("local", { session: false }, (err, user, info) => {
+      if (err || !user) {
+        const error = new Error("User does not exist");
+        return res.status(403).json({
+          info,
+        });
+      }
+      req.login(user, { session: false }, (err) => {
+        if (err) return next(err);
+        // create token
+        const token = jwt.sign({ user }, process.env.SECRET_KEY, {
+          expiresIn: "1d",
+        });
+
+        return res.status(200).json({ user, token });
+      });
+    })(req, res, next);
+  } catch (err) {
+    res.status(403).json({
+      err,
+    });
+  }
+};
+
 exports.get_users = (req, res, next) => {
-    User.find({}).exec((err, users) => {
-        if(err) return next(err);
-        res.status(200).json(users);
-    })
-}
+  User.find({}).exec((err, users) => {
+    if (err) return next(err);
+    res.status(200).json(users);
+  });
+};
