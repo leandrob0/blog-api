@@ -4,9 +4,11 @@ const Schema = mongoose.Schema;
 
 const PostSchema = new Schema(
   {
-    title: { type: String, maxlength: 100 },
+    author: { type: Schema.Types.ObjectId, ref: "User" },
+    title: { type: String, minlength: 1 , maxlength: 100 },
     text: { type: String, minlength: 1 },
-    published: { type: Boolean, default: false},
+    published: { type: Boolean, default: false },
+    comments: [{type: Schema.Types.ObjectId, ref: "Comment"}]
   },
   { timestamps: true }
 );

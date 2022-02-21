@@ -1,5 +1,5 @@
 const unknownEndpoint = (req, res) => {
-  res.status(404).send({ error: "unknown endpoint" });
+  res.status(404).json({ error: "unknown endpoint" });
 };
 
 const errorHandler = (error, req, res, next) => {
