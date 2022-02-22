@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const Comment = require("../models/comment");
+const async = require("async");
 const { body, validationResult } = require("express-validator");
 
 exports.get_all_posts = (req, res, next) => {
@@ -12,9 +13,11 @@ exports.get_all_posts = (req, res, next) => {
 };
 
 exports.create_post = [
+  // Validates and sinitizes the data.
   body("title").trim().isLength({ min: 1 }).escape(),
   body("text").trim().isLength({ min: 1 }).escape(),
   (req, res, next) => {
+    // Checks if there are any errors in the validation.
     const errors = validationResult(req);
 
     const post = new Post({
@@ -22,7 +25,6 @@ exports.create_post = [
       title: req.body.title,
       text: req.body.text,
       published: false,
-      comments: [],
     });
 
     if (!errors.isEmpty()) {
@@ -32,6 +34,7 @@ exports.create_post = [
         msg: "Invalid title or text",
       });
     } else {
+      // If there are no errors, saves the post to the db.
       post.save((err) => {
         if (err) return next(err);
         res.status(201).json(post);
@@ -41,19 +44,30 @@ exports.create_post = [
 ];
 
 exports.get_post = (req, res, next) => {
-  Post.findById(req.params.id)
-    .populate("author", "username")
-    .exec((err, post) => {
+  // Executes both the db queries in parallel.
+  async.parallel(
+    {
+      post: (cb) =>
+        Post.findById(req.params.id).populate("author", "username").exec(cb),
+      comments: (cb) =>
+        Comment.find({ post: req.params.id })
+          .populate("author", "username")
+          .exec(cb),
+    },
+    // When the execution of the previous queries finishes, calls this callback.
+    (err, results) => {
       if (err) return next(err);
-      if (!post) {
-        res.status(400).json({
-          msg: "The post was not found.",
-        });
+      // If a post wasn't found, returns an 404.
+      if (results.post == null) {
+        res.status(404).end();
       }
+      // else returns the post and its comments.
       res.status(200).json({
-        post,
+        post: results.post,
+        comments: results.comments,
       });
-    });
+    }
+  );
 };
 
 exports.update_post = [
@@ -77,7 +91,6 @@ exports.update_post = [
         title: req.body.title,
         text: req.body.text,
         published: post.published,
-        comments: post.comments,
       });
 
       if (!errors.isEmpty()) {
@@ -102,9 +115,14 @@ exports.update_post = [
 ];
 
 exports.delete_post = (req, res, next) => {
+  // Finds and removes the post.
   Post.findByIdAndRemove(req.params.id, function deletePost(err) {
     if (err) return next(err);
-
+    // Deletes every comment linked to that post
+    Comment.deleteMany({ post: req.params.id }, function deletedComments(err) {
+      if (err) return next(err);
+    });
+    // Returns every post after deletion.
     Post.find({}).exec((err, posts) => {
       if (err) return next(err);
       res.status(200).json({
@@ -114,6 +132,7 @@ exports.delete_post = (req, res, next) => {
   });
 };
 
+// Toggles the publish status.
 exports.published_status_post = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -124,7 +143,6 @@ exports.published_status_post = async (req, res, next) => {
       title: post.title,
       text: post.text,
       published: !post.published,
-      comments: post.comments,
     });
 
     const newPost = await Post.findByIdAndUpdate(req.params.id, updatedPost);
