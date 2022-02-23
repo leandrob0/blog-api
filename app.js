@@ -17,7 +17,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 // APP MIDDLEWARES.
 // TODO: const corsOptions = {};
 app.use(cors({
-  origin: "http://localhost:3000/", // For now, until everything is done.
+  origin: "http://localhost:3000", // For now, until everything is done.
 }));
 app.use(helmet());
 app.use(compression());

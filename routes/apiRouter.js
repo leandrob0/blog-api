@@ -28,8 +28,16 @@ router.get("/users", authController.get_users);
 
 */
 
-// GET returns all the posts created.
-router.get("/posts", postController.get_all_posts);
+// GET returns all the posts created and published
+router.get("/posts/pub", postController.get_all_posts_published);
+
+// GET returns all the posts created (for the cms).
+router.get(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  validateAdmin,
+  postController.get_all_posts
+);
 
 // POST creates a new post.
 router.post(

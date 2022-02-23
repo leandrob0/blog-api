@@ -4,12 +4,25 @@ const async = require("async");
 const { body, validationResult } = require("express-validator");
 
 exports.get_all_posts = (req, res, next) => {
-  Post.find({}).exec((err, posts) => {
-    if (err) return next(err);
-    res.status(200).json({
-      posts,
+  Post.find({})
+    .populate("author", "username")
+    .exec((err, posts) => {
+      if (err) return next(err);
+      res.status(200).json({
+        posts,
+      });
     });
-  });
+};
+
+exports.get_all_posts_published = (req, res, next) => {
+  Post.find({ published: true })
+    .populate("author", "username")
+    .exec((err, posts) => {
+      if (err) return next(err);
+      res.status(200).json({
+        posts,
+      });
+    });
 };
 
 exports.create_post = [
