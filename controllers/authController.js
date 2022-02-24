@@ -44,6 +44,7 @@ exports.login = async function (req, res, next) {
       if (err || !user) {
         const error = new Error("User does not exist");
         return res.status(403).json({
+          error,
           info,
         });
       }
@@ -54,7 +55,9 @@ exports.login = async function (req, res, next) {
           expiresIn: "1d",
         });
 
-        return res.status(200).json({ user, token });
+        return res
+          .status(200)
+          .json({ username: user.username, admin: user.admin, token });
       });
     })(req, res, next);
   } catch (err) {
