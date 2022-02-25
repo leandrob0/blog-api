@@ -28,9 +28,6 @@ router.get("/users", authController.get_users);
 
 */
 
-// GET returns all the posts created and published
-router.get("/posts/pub", postController.get_all_posts_published);
-
 // GET returns all the posts created (for the cms).
 router.get(
   "/posts",
@@ -48,11 +45,14 @@ router.post(
 );
 
 // GET details from a post.
-router.get("/post/:id", postController.get_post);
+router.get("/posts/:id", postController.get_post);
+
+// GET returns all the posts created and published sorted by last updated or created.
+router.get("/posts/:limit/sorted", postController.get_all_posts_published_sorted);
 
 // PUT updates a post.
 router.put(
-  "/post/:id",
+  "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   validateAdmin,
   postController.update_post
@@ -60,15 +60,15 @@ router.put(
 
 // DELETE deletes a post.
 router.delete(
-  "/post/:id",
+  "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   validateAdmin,
   postController.delete_post
 );
 
-// PUT updates a post.
+// PUT publishes a post.
 router.put(
-  "/post/:id/publish",
+  "/posts/:id/publish",
   passport.authenticate("jwt", { session: false }),
   validateAdmin,
   postController.published_status_post
@@ -82,7 +82,7 @@ router.put(
 
 // POST creates a new comment.
 router.post(
-  "/post/:id/comment",
+  "/posts/:id/comment",
   passport.authenticate("jwt", { session: false }),
   commentController.create_comment
 );
