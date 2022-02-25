@@ -32,7 +32,7 @@ exports.create_comment = [
         if (err) return next(err);
 
         // After saving the comment returns every comment.
-        const comments = await Comment.find({});
+        const comments = await Comment.find({}).populate("author", "username");
         res.status(200).json({
           comments,
         });
