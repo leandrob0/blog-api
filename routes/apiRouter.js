@@ -47,11 +47,14 @@ router.post(
   postController.create_post
 );
 
+// GET returns X next posts created and published sorted by last updated or created.
+router.get("/posts/sorted", postController.get_all_posts_published_sorted);
+
 // GET details from a post.
 router.get("/posts/:id", postController.get_post);
 
-// GET returns all the posts created and published sorted by last updated or created.
-router.get("/posts/:limit/sorted", postController.get_all_posts_published_sorted);
+// GET returns X the posts created and published sorted by last updated or created.
+router.get("/posts/:limit/sorted", postController.get_limit_posts_published_sorted);
 
 // PUT updates a post.
 router.put(

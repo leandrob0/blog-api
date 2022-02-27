@@ -16,6 +16,18 @@ exports.get_all_posts = (req, res, next) => {
 
 exports.get_all_posts_published_sorted = (req, res, next) => {
   Post.find({ published: true })
+    .sort({updatedAt: -1})
+    .populate("author", "username")
+    .exec((err, posts) => {
+      if (err) return next(err);
+      res.status(200).json({
+        posts,
+      });
+    });
+}
+
+exports.get_limit_posts_published_sorted = (req, res, next) => {
+  Post.find({ published: true })
     .limit(req.params.limit)
     .sort({updatedAt: -1})
     .populate("author", "username")
