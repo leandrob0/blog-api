@@ -19,6 +19,9 @@ router.post("/register", authController.register);
 // POST log in a new user
 router.post("/login", authController.login);
 
+// POST log in an admin to the CMS. (only admins can log in)
+router.post("/login/cms", authController.login_admin);
+
 // GET all users to test API.
 router.get("/users", authController.get_users);
 

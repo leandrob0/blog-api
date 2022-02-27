@@ -2,9 +2,9 @@
 
 This repo is an REST API developed to work with a React developed Blog page, and a CMS.
 
-- [Link to client repo](https://github.com/leandrob0/blog-client) 
+- [Link to Client repo](https://github.com/leandrob0/blog-client) 
 
-CMS repo: not done yet.
+- [Link to CMS repo](https://github.com/leandrob0/blog-cms)
 
 # About 
 

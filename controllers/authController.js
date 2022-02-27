@@ -47,7 +47,43 @@ exports.login = async function (req, res, next) {
           error,
           info,
         });
+      };
+
+      req.login(user, { session: false }, (err) => {
+        if (err) return next(err);
+        // create token
+        const token = jwt.sign({ user }, process.env.SECRET_KEY, {
+          expiresIn: "1d",
+        });
+
+        return res
+          .status(200)
+          .json({ username: user.username, admin: user.admin, token });
+      });
+    })(req, res, next);
+  } catch (err) {
+    res.status(403).json({
+      err,
+    });
+  }
+};
+
+exports.login_admin = (req, res, next) => {
+  try {
+    passport.authenticate("local", { session: false }, (err, user, info) => {
+      if (err || !user) {
+        const error = new Error("User does not exist");
+        return res.status(403).json({
+          error,
+          info,
+        });
       }
+
+      // This line added to check the user is an admin before letting him in the CMS.
+      if(!user.admin) {
+        return res.status(403).json({msg: "The user is not an admin"});
+      }
+
       req.login(user, { session: false }, (err) => {
         if (err) return next(err);
         // create token
