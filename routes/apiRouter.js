@@ -54,7 +54,10 @@ router.get("/posts/sorted", postController.get_all_posts_published_sorted);
 router.get("/posts/:id", postController.get_post);
 
 // GET returns X the posts created and published sorted by last updated or created.
-router.get("/posts/:limit/sorted", postController.get_limit_posts_published_sorted);
+router.get(
+  "/posts/:limit/sorted",
+  postController.get_limit_posts_published_sorted
+);
 
 // PUT updates a post.
 router.put(
