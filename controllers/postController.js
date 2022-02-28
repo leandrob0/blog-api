@@ -129,7 +129,8 @@ exports.update_post = [
       } else {
         const newPost = await Post.findByIdAndUpdate(
           req.params.id,
-          updatedPost
+          updatedPost,
+          {new: true}
         );
         res.status(201).json({
           post: newPost,
@@ -172,7 +173,7 @@ exports.published_status_post = async (req, res, next) => {
       published: !post.published,
     });
 
-    const newPost = await Post.findByIdAndUpdate(req.params.id, updatedPost);
+    const newPost = await Post.findByIdAndUpdate(req.params.id, updatedPost, {new: true});
     res.status(201).json({
       post: newPost,
     });
