@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const passport = require("passport");
 
+const authorized = require("../middleware/authorizeUser");
 const validateAdmin = require("../middleware/adminAuth");
 
 const authController = require("../controllers/authController");
@@ -34,7 +34,7 @@ router.get("/users", authController.get_users);
 // GET returns all the posts created (for the cms).
 router.get(
   "/posts",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   validateAdmin,
   postController.get_all_posts
 );
@@ -42,7 +42,7 @@ router.get(
 // POST creates a new post.
 router.post(
   "/posts",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   validateAdmin,
   postController.create_post
 );
@@ -62,7 +62,7 @@ router.get(
 // PUT updates a post.
 router.put(
   "/posts/:id",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   validateAdmin,
   postController.update_post
 );
@@ -70,7 +70,7 @@ router.put(
 // DELETE deletes a post.
 router.delete(
   "/posts/:id",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   validateAdmin,
   postController.delete_post
 );
@@ -78,7 +78,7 @@ router.delete(
 // PUT publishes a post.
 router.put(
   "/posts/:id/publish",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   validateAdmin,
   postController.published_status_post
 );
@@ -92,14 +92,14 @@ router.put(
 // POST creates a new comment.
 router.post(
   "/posts/:id/comment",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   commentController.create_comment
 );
 
 // DELETE deletes a comment.
 router.delete(
   "/comment/:id",
-  passport.authenticate("jwt", { session: false }),
+  authorized,
   validateAdmin,
   commentController.delete_comment
 );
