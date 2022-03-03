@@ -15,14 +15,16 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // APP MIDDLEWARES.
-app.use(cors({
-  origin: ["http://localhost:3000","https://ecstatic-nobel-1cf38c.netlify.app/"],
-}));
+let corsOptions = {
+  origin: ['https://ecstatic-nobel-1cf38c.netlify.app/','http://localhost:3000'],
+  optionsSuccessStatus: 200
+}
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
+app.options("*", cors(corsOptions));
 
 // Passport initialization;
 const passport = require("./config/passport");
@@ -31,7 +33,7 @@ app.use(passport.initialize());
 // ROUTE.
 const apiRouter = require("./routes/apiRouter");
 
-app.use("/api", apiRouter);
+app.use("/api",cors(corsOptions),apiRouter);
 
 // ERROR HANDLING MIDDLEWARES.
 const { unknownEndpoint, errorHandler } = require("./middleware/errorHandle");
