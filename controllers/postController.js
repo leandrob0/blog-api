@@ -6,6 +6,7 @@ const { body, validationResult } = require("express-validator");
 exports.get_all_posts = (req, res, next) => {
   Post.find({})
     .populate("author", "username")
+    .sort({updatedAt: -1})
     .exec((err, posts) => {
       if (err) return next(err);
       res.status(200).json({
