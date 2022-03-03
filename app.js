@@ -17,6 +17,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 // APP MIDDLEWARES.
 const whitelist = [
   "https://ecstatic-nobel-1cf38c.netlify.app",
+  "https://hopeful-meninsky-7385ed.netlify.app",
   "http://localhost:3000",
 ];
 app.use(helmet());
