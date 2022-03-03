@@ -19,21 +19,21 @@ const whitelist = [
   "https://ecstatic-nobel-1cf38c.netlify.app/",
   "http://localhost:3000",
 ];
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
-app.options("*", cors(corsOptions));
+
+const corsOptionsDelegate = function (req, callback) {
+  let corsOptions;
+  if (whitelist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false } // disable CORS for this request
+  }
+  callback(null, corsOptions) // callback expects two parameters: error and options
+}
 
 // Passport initialization;
 const passport = require("./config/passport");
@@ -42,7 +42,7 @@ app.use(passport.initialize());
 // ROUTE.
 const apiRouter = require("./routes/apiRouter");
 
-app.use("/api", cors(corsOptions), apiRouter);
+app.use("/api", cors(corsOptionsDelegate), apiRouter);
 
 // ERROR HANDLING MIDDLEWARES.
 const { unknownEndpoint, errorHandler } = require("./middleware/errorHandle");
